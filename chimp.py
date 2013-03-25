@@ -93,6 +93,7 @@ class Chimp(pygame.sprite.Sprite):
         self.move2= dy
         self.dizzy = 0
         self.Losowe=Losowe
+        self.Stan="normalny"
 
     def update(self):
         "walk or spin, depending on the monkeys state"
@@ -103,7 +104,7 @@ class Chimp(pygame.sprite.Sprite):
 
     def _walk(self):
         "move the monkey across the screen, and turn at the ends"
-        if self.Losowe:
+        if self.Losowe and self.Stan=="normalny":
          if random.randint (1,20)==20:
             self.move+=1
          if random.randint (1,20)==20:
@@ -112,6 +113,10 @@ class Chimp(pygame.sprite.Sprite):
             self.move2+=1
          if random.randint (1,20)==20:
             self.move2-=1
+        elif self.Stan=="trafiony":
+            self.move= 0
+            self.move2= 3
+            
         newpos = self.rect.move((self.move, self.move2))
         zmianakierunku= False
         if self.rect.left < self.area.left or \
@@ -120,13 +125,22 @@ class Chimp(pygame.sprite.Sprite):
             self.image = pygame.transform.flip(self.image, 1, 0)
             zmianakierunku= True
         if self.rect.top < self.area.top or \
-            self.rect.bottom > self.area.bottom:
-            self.move2= -self.move2
-            zmianakierunku= True
+              self.rect.bottom > self.area.bottom:
+          #print "ZZZ:"+repr(self.rect.bottom)+" "+repr(self.area.bottom)
+          if  self.Stan=="normalny":
+              #print "NT"
+              self.move2= -self.move2
+              zmianakierunku= True
+          else:
+            #print "HI {} {}".format(self.move, self.move2)
+            self.move2= 0
+            self.move=0
+            self.Stan="lezy"
+            
         if zmianakierunku:
             newpos = self.rect.move((self.move, self.move2))
         self.rect = newpos
-
+ 
     def _spin(self):
         "spin the monkey image"
         center = self.rect.center
@@ -178,7 +192,7 @@ def main():
     for ps in ['aua','ale','bul']:
         punch_sounds.append (load_sound(ps+'.wav'))
     chimps = []
-    for chimp in range (10):
+    for chimp in range (1):
         chimps.append (Chimp(100,130,3,9,True))
     fist = Fist()
     allsprites = pygame.sprite.RenderPlain([fist, ]+chimps)
@@ -200,6 +214,7 @@ def main():
                 malpa_trafiona= False
                 for chimp in chimps:
                     if fist.trafione(chimp):
+                      chimp.Stan="trafiony"
                       malpa_trafiona= True
                       punch_sounds[random.randint(0,2)].play() #punch
                       chimp.punched()
