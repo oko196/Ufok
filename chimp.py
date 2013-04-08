@@ -11,6 +11,7 @@ follow along in the tutorial.
 import os, pygame,random
 from pygame.locals import *
 from pygame.compat import geterror
+from pygame import gfxdraw as gfx
 
 if not pygame.font: print ('Warning, fonts disabled')
 if not pygame.mixer: print ('Warning, sound disabled')
@@ -101,6 +102,19 @@ class Chimp(pygame.sprite.Sprite):
             self._spin()
         else:
             self._walk()
+    def  dym(self,screen):
+      if self.Stan=="trafiony":
+        x0,y0=self.rect.topleft
+        x1,y1=self.rect.bottomright
+        xs=(x1+x0)/2
+        ys=(y1+y0)/2
+        r=10
+        dx=-5*self.move
+        dy=-5*self.move2
+        gfx.filled_circle (screen ,xs+dx,ys+dy,r,pygame.Color("white"))
+        gfx.filled_circle (screen ,xs+3*dx,ys+3*dy,2*r,pygame.Color("white"))
+        gfx.filled_circle (screen ,xs+5*dx,ys+5*dy,3*r,pygame.Color("white"))
+        gfx.filled_circle (screen ,xs+8*dx,ys+8*dy,4*r,pygame.Color("white")) 
 
     def _walk(self):
         "move the monkey across the screen, and turn at the ends"
@@ -192,7 +206,7 @@ def main():
     for ps in ['aua','ale','bul']:
         punch_sounds.append (load_sound(ps+'.wav'))
     chimps = []
-    for chimp in range (1):
+    for chimp in range (20):
         chimps.append (Chimp(100,130,3,9,True))
     fist = Fist()
     allsprites = pygame.sprite.RenderPlain([fist, ]+chimps)
@@ -224,10 +238,15 @@ def main():
                 fist.unpunch()
 
         allsprites.update()
-
+        
         #Draw Everything
         screen.blit(background, (0, 0))
+
+        for maupa in chimps:
+
+          maupa.dym (screen)
         allsprites.draw(screen)
+        #gfx.circle (screen,100,100,50,pygame.Color("white")) 
         pygame.display.flip()
 
     pygame.quit()
