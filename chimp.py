@@ -95,6 +95,7 @@ class Chimp(pygame.sprite.Sprite):
         self.dizzy = 0
         self.Losowe=Losowe
         self.Stan="normalny"
+        self.time_0=0
 
     def update(self):
         "walk or spin, depending on the monkeys state"
@@ -114,10 +115,19 @@ class Chimp(pygame.sprite.Sprite):
         gfx.filled_circle (screen ,xs+dx,ys+dy,r,pygame.Color("white"))
         gfx.filled_circle (screen ,xs+3*dx,ys+3*dy,2*r,pygame.Color("white"))
         gfx.filled_circle (screen ,xs+5*dx,ys+5*dy,3*r,pygame.Color("white"))
-        gfx.filled_circle (screen ,xs+8*dx,ys+8*dy,4*r,pygame.Color("white")) 
-
+        gfx.filled_circle (screen ,xs+8*dx,ys+8*dy,4*r,pygame.Color("white"))
+        gfx.filled_circle (screen ,xs+12*dx,ys+12*dy,5*r,pygame.Color("white"))
+        gfx.filled_circle (screen ,xs+16*dx,ys+16*dy,6*r,pygame.Color("white"))
+        gfx.filled_circle (screen ,xs+20*dx,ys+20*dy,7*r,pygame.Color("white"))
     def _walk(self):
         "move the monkey across the screen, and turn at the ends"
+        if self.Stan=="lezy":
+         if pygame.time.get_ticks() - self.time_0 > 3000:
+            self.Stan= 'normalny'
+            self.move2= -1
+            self.move= 1
+            newpos = self.rect.move((0, -10))
+            self.rect = newpos
         if self.Losowe and self.Stan=="normalny":
          if random.randint (1,20)==20:
             self.move+=1
@@ -149,7 +159,9 @@ class Chimp(pygame.sprite.Sprite):
             #print "HI {} {}".format(self.move, self.move2)
             self.move2= 0
             self.move=0
-            self.Stan="lezy"
+            if self.Stan != "lezy":
+              self.Stan="lezy"
+              self.time_0=pygame.time.get_ticks ()
             
         if zmianakierunku:
             newpos = self.rect.move((self.move, self.move2))
@@ -206,7 +218,7 @@ def main():
     for ps in ['aua','ale','bul']:
         punch_sounds.append (load_sound(ps+'.wav'))
     chimps = []
-    for chimp in range (20):
+    for chimp in range(10):
         chimps.append (Chimp(100,130,3,9,True))
     fist = Fist()
     allsprites = pygame.sprite.RenderPlain([fist, ]+chimps)
