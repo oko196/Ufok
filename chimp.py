@@ -112,13 +112,15 @@ class Chimp(pygame.sprite.Sprite):
         r=10
         dx=-5*self.move
         dy=-5*self.move2
-        gfx.filled_circle (screen ,xs+dx,ys+dy,r,pygame.Color("white"))
-        gfx.filled_circle (screen ,xs+3*dx,ys+3*dy,2*r,pygame.Color("white"))
-        gfx.filled_circle (screen ,xs+5*dx,ys+5*dy,3*r,pygame.Color("white"))
-        gfx.filled_circle (screen ,xs+8*dx,ys+8*dy,4*r,pygame.Color("white"))
-        gfx.filled_circle (screen ,xs+12*dx,ys+12*dy,5*r,pygame.Color("white"))
-        gfx.filled_circle (screen ,xs+16*dx,ys+16*dy,6*r,pygame.Color("white"))
-        gfx.filled_circle (screen ,xs+20*dx,ys+20*dy,7*r,pygame.Color("white"))
+##        gfx.filled_circle (screen ,xs+dx,ys+dy,r,pygame.Color("white"))
+##        gfx.filled_circle (screen ,xs+3*dx,ys+3*dy,2*r,pygame.Color("white"))
+##        gfx.filled_circle (screen ,xs+5*dx,ys+5*dy,3*r,pygame.Color("white"))
+##        gfx.filled_circle (screen ,xs+7*dx,ys+8*dy,4*r,pygame.Color("white"))
+##        gfx.filled_circle (screen ,xs+12*dx,ys+12*dy,5*r,pygame.Color("white"))
+##        gfx.filled_circle (screen ,xs+16*dx,ys+16*dy,6*r,pygame.Color("grey"))
+##        gfx.filled_circle (screen ,xs+20*dx,ys+20*dy,7*r,pygame.Color("black"))
+        for i in range (7):    
+         gfx.filled_circle (screen ,xs+(1+2*i)*dx,ys+(1+2*i)*dy,(i+1)*r,pygame.Color(0xcc,0xcc,0xcc,255-20*i))
     def _walk(self):
         "move the monkey across the screen, and turn at the ends"
         if self.Stan=="lezy":
@@ -150,22 +152,32 @@ class Chimp(pygame.sprite.Sprite):
             zmianakierunku= True
         if self.rect.top < self.area.top or \
               self.rect.bottom > self.area.bottom:
-          #print "ZZZ:"+repr(self.rect.bottom)+" "+repr(self.area.bottom)
           if  self.Stan=="normalny":
-              #print "NT"
               self.move2= -self.move2
               zmianakierunku= True
           else:
-            #print "HI {} {}".format(self.move, self.move2)
             self.move2= 0
             self.move=0
             if self.Stan != "lezy":
               self.Stan="lezy"
-              self.time_0=pygame.time.get_ticks ()
-            
+              self.mochod= Mochod()
+              self.sprites.add(self.mochod)
+              self.time_0=pygame.time.get_ticks()    
         if zmianakierunku:
-            newpos = self.rect.move((self.move, self.move2))
-        self.rect = newpos
+            #newpos = self.rect.move((self.move, self.move2))
+            if self.rect.left < self.area.left:
+               self.rect.left = self.area.left+10
+            if self.rect.right > self.area.right:
+               self.rect.right = self.area.right-10
+            if self.rect.top < self.area.top :
+               self.rect.top = self.area.top+10
+            if self.rect.bottom > self.area.bottom:
+               self.rect.bottom = self.area.bottom-10
+
+          
+
+        else:
+         self.rect = newpos
  
     def _spin(self):
         "spin the monkey image"
@@ -184,8 +196,11 @@ class Chimp(pygame.sprite.Sprite):
         if not self.dizzy:
             self.dizzy = 1
             self.original = self.image
-
-
+class Mochod(pygame.sprite.Sprite):
+    def __init__(self,x=10):
+        pygame.sprite.Sprite.__init__(self) #call Sprite intializer
+        self.image, self.rect = load_image("mochod.bmp" , -1,)
+ 
 def main():
     """this function is called when the program starts.
        it initializes everything it needs, then runs in
@@ -222,6 +237,8 @@ def main():
         chimps.append (Chimp(100,130,3,9,True))
     fist = Fist()
     allsprites = pygame.sprite.RenderPlain([fist, ]+chimps)
+    for chimp in chimps:
+        chimp.sprites= allsprites
 
 
 #Main Loop
