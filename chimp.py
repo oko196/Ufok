@@ -86,7 +86,7 @@ class Chimp(pygame.sprite.Sprite):
        monkey when it is punched."""
     def __init__(self,x=10,y=10,dx=9,dy=3,Losowe=False):
         pygame.sprite.Sprite.__init__(self) #call Sprite intializer
-        self.image, self.rect = load_image("alien1.bmp" , -1,)
+        self.image, self.rect = load_image("mochod.bmp" , -1,)
         screen = pygame.display.get_surface()
         self.area = screen.get_rect()
         self.rect.topleft = x, y 
