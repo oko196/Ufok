@@ -86,7 +86,7 @@ class Chimp(pygame.sprite.Sprite):
        monkey when it is punched."""
     def __init__(self,x=10,y=10,dx=9,dy=3,Losowe=False):
         pygame.sprite.Sprite.__init__(self) #call Sprite intializer
-        self.image, self.rect = load_image("mochod.bmp" , -1,)
+        self.image, self.rect = load_image("alien1.bmp" , -1,)
         screen = pygame.display.get_surface()
         self.area = screen.get_rect()
         self.rect.topleft = x, y 
@@ -124,12 +124,14 @@ class Chimp(pygame.sprite.Sprite):
     def _walk(self):
         "move the monkey across the screen, and turn at the ends"
         if self.Stan=="lezy":
-         if pygame.time.get_ticks() - self.time_0 > 3000:
-            self.Stan= 'normalny'
-            self.move2= -1
-            self.move= 1
-            newpos = self.rect.move((0, -10))
-            self.rect = newpos
+            if self.mochod.stan== "stop":
+         #if pygame.time.get_ticks() - self.time_0 > 3000:
+             self.Stan= 'normalny'
+             self.move2= -1
+             self.move= 1
+             newpos = self.rect.move((0, -10))
+             self.mochod= None
+             self.rect = newpos
         if self.Losowe and self.Stan=="normalny":
          if random.randint (1,20)==20:
             self.move+=1
@@ -160,9 +162,9 @@ class Chimp(pygame.sprite.Sprite):
             self.move=0
             if self.Stan != "lezy":
               self.Stan="lezy"
-              self.mochod= Mochod()
+              self.mochod= Mochod(self.rect.centerx,self.area.bottom)
               self.sprites.add(self.mochod)
-              self.time_0=pygame.time.get_ticks()    
+              #self.time_0=pygame.time.get_ticks()    
         if zmianakierunku:
             #newpos = self.rect.move((self.move, self.move2))
             if self.rect.left < self.area.left:
@@ -196,10 +198,30 @@ class Chimp(pygame.sprite.Sprite):
         if not self.dizzy:
             self.dizzy = 1
             self.original = self.image
+
+
 class Mochod(pygame.sprite.Sprite):
-    def __init__(self,x=10):
+    def __init__(self,x=100,bottom=100):
         pygame.sprite.Sprite.__init__(self) #call Sprite intializer
-        self.image, self.rect = load_image("mochod.bmp" , -1,)
+        self.image, self.rect = load_image("mochod.bmp" , -1 ,)
+        self.rect.bottom= bottom
+        self.startx= x
+        self.rect.centerx=x
+        self.stan="help"
+        screen = pygame.display.get_surface()
+        self.area = screen.get_rect()
+        
+    def update (self):
+        if self.stan== "help": 
+          self.rect.move_ip (5,0)
+        elif self.stan== "powrot":
+          self.rect.move_ip (-5,0)
+          if self.rect.centerx < self.startx:
+             self.stan="stop"
+        elif self.stan== "stop":
+             self.kill ()
+        if self.rect.left > self.area.right:
+          self.stan= "powrot"        
  
 def main():
     """this function is called when the program starts.
