@@ -221,8 +221,23 @@ class Mochod(pygame.sprite.Sprite):
         elif self.stan== "stop":
              self.kill ()
         if self.rect.left > self.area.right:
-          self.stan= "powrot"        
- 
+          self.stan= "powrot"
+
+class alienlud(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self) #call Sprite intializer
+        self.image, self.rect = load_image("alienlud1.bmp" , -1 )
+        self.images=[]
+        for lud in range(1,5):
+            ii,oo=load_image('alienlud'+str (lud)+".bmp",-1)
+            self.images.append(ii)
+        self.lasttick = pygame.time.get_ticks()
+        self.imgnum= 0
+    def update(self):
+      if pygame.time.get_ticks() - self.lasttick > 100:
+         self.lasttick = pygame.time.get_ticks()
+         self.imgnum = (self.imgnum + 1) %4
+         self.image = self.images[self.imgnum]
 def main():
     """this function is called when the program starts.
        it initializes everything it needs, then runs in
@@ -234,7 +249,7 @@ def main():
     pygame.mouse.set_visible(0)
 
 #Create The Backgound
-    background, bgrett = load_image("gory.bmp")
+    background, bgrett = load_image("gory2.bmp")
     #background = pygame.Surface(screen.get_size())
     background = background.convert()
     #background.fill((250, 250, 250))
@@ -258,7 +273,8 @@ def main():
     for chimp in range(10):
         chimps.append (Chimp(100,130,3,9,True))
     fist = Fist()
-    allsprites = pygame.sprite.RenderPlain([fist, ]+chimps)
+    a=alienlud()
+    allsprites = pygame.sprite.RenderPlain([fist,a ]+chimps)
     for chimp in chimps:
         chimp.sprites= allsprites
 
